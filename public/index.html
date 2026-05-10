@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AquaMonitor – Hệ Thống Giám Sát Nước Thông Minh</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="config.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Particle background -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-tank">
+        <div class="logo-water" id="logoWater"></div>
+        <svg class="logo-tank-outline" viewBox="0 0 40 50" fill="none">
+          <rect x="4" y="8" width="32" height="38" rx="4" stroke="currentColor" stroke-width="2"/>
+          <rect x="14" y="2" width="12" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </div>
+      <span class="logo-text">Aqua<span class="logo-accent">Monitor</span></span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span>Tổng quan</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        <span>Biểu đồ</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span>Cảnh báo</span>
+      </a>
+      <a href="#" class="nav-item">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Cài đặt</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div id="statusBadge" class="status-badge demo">
+        <span class="status-dot"></span>
+        <span class="status-text">DEMO</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Hệ Thống Giám Sát</h1>
+        <p class="page-subtitle" id="currentDateTime">--</p>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="refreshBtn" title="Làm mới">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        </button>
+        <button class="icon-btn" id="alertBtn" title="Cảnh báo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="alert-dot" id="alertDot"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI Strip -->
+    <section class="kpi-strip">
+      <div class="kpi-card">
+        <div class="kpi-icon water-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Mực nước</span>
+          <span class="kpi-value" id="valLevel">--%</span>
+        </div>
+        <div class="kpi-trend" id="levelTrend">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon volume-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12l2 18H4z"/><path d="M6 9h12"/></svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Thể tích</span>
+          <span class="kpi-value" id="valVolume">-- L</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon status-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Tình trạng</span>
+          <span class="kpi-value status-val" id="valStatus">--</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon time-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="kpi-info">
+          <span class="kpi-label">Cập nhật</span>
+          <span class="kpi-value" id="valTime">--:--:--</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid -->
+    <section class="dashboard-grid">
+      <!-- Water Tank Visualization -->
+      <div class="panel tank-panel" id="gaugeCard">
+        <div class="panel-header">
+          <h2 class="panel-title">Bồn Chứa Nước</h2>
+          <span class="panel-badge" id="deviceDot">ONLINE</span>
+        </div>
+        <div class="tank-visual">
+          <div class="tank-container">
+            <div class="tank-body">
+              <div class="tank-water" id="tankWater">
+                <div class="tank-wave"></div>
+                <div class="tank-wave tank-wave-2"></div>
+              </div>
+              <div class="tank-markers">
+                <span>100%</span>
+                <span>75%</span>
+                <span>50%</span>
+                <span>25%</span>
+                <span>0%</span>
+              </div>
+              <div class="tank-reading" id="gaugePercent">0%</div>
+            </div>
+            <div class="tank-pipes">
+              <div class="pipe pipe-in" id="pipeIn">
+                <div class="pipe-flow"></div>
+                <span class="pipe-label">VÀO</span>
+              </div>
+              <div class="pipe pipe-out" id="pipeOut">
+                <div class="pipe-flow"></div>
+                <span class="pipe-label">RA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Level bar -->
+        <div class="level-bar-wrap">
+          <div class="level-bar-fill" id="levelBar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- Pump Controls -->
+      <div class="panel pump-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Điều Khiển Bơm</h2>
+          <span class="panel-badge" id="pumpDot">HOẠT ĐỘNG</span>
+        </div>
+
+        <div class="pump-cards">
+          <div class="pump-card" id="pumpInItem">
+            <div class="pump-visual">
+              <div class="pump-ring" id="pumpInRing">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" class="pump-track"/>
+                  <circle cx="50" cy="50" r="42" class="pump-progress" id="pumpInProgress"/>
+                </svg>
+                <div class="pump-icon-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 11 12 6 7 11"/><line x1="12" y1="18" x2="12" y2="6"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="pump-info">
+              <span class="pump-name">Bơm Vào</span>
+              <span class="pump-badge off" id="pumpInBadge">DỪNG</span>
+            </div>
+          </div>
+
+          <div class="pump-card" id="pumpOutItem">
+            <div class="pump-visual">
+              <div class="pump-ring" id="pumpOutRing">
+                <svg viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" class="pump-track"/>
+                  <circle cx="50" cy="50" r="42" class="pump-progress" id="pumpOutProgress"/>
+                </svg>
+                <div class="pump-icon-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 13 12 18 17 13"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="pump-info">
+              <span class="pump-name">Bơm Ra</span>
+              <span class="pump-badge off" id="pumpOutBadge">DỪNG</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pump Control Buttons -->
+        <div class="pump-control-group">
+          <button class="pump-control-btn" id="btnPumpIn" disabled>▶ BẬT Bơm Vào</button>
+          <button class="pump-control-btn" id="btnPumpOut" disabled>▶ BẬT Bơm Ra</button>
+        </div>
+        <p class="pump-control-hint" id="pumpHint">Kết nối MongoDB để điều khiến bơm</p>
+
+        <div class="alert-strip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span id="valAlert">Bình thường</span>
+        </div>
+      </div>
+
+      <!-- Real-time Chart -->
+      <div class="panel chart-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Biểu Đồ Mực Nước</h2>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot teal"></span>Mực nước</span>
+            <span class="legend-item"><span class="legend-dot red"></span>Ngưỡng tràn</span>
+            <span class="legend-item"><span class="legend-dot amber"></span>Ngưỡng cạn</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="waterChart"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

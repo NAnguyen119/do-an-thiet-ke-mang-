@@ -1,0 +1,19 @@
+{
+  "name": "water-dashboard",
+  "version": "1.0.0",
+  "description": "AquaMonitor - Hệ thống giám sát nước thông minh với MongoDB Atlas",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "mongodb": "^6.21.0",
+    "mongoose": "^9.4.1",
+    "mqtt": "^5.15.1",
+    "socket.io": "^4.8.3"
+  }
+}
